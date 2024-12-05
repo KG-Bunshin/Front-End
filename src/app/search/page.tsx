@@ -257,17 +257,29 @@ export default function Search() {
               <div className="flex flex-wrap gap-5 overflow-auto">
                 {cities &&
                   cities.results.bindings.length > 0 &&
-                  cities.results.bindings.map((city, idx) => (
+                  cities.results.bindings.map((cityData, idx) => (
                     <Badge
-                      variant="outline"
+                      variant={
+                        city == extractEntityFromURL(cityData.resource.value)
+                          ? 'default'
+                          : 'outline'
+                      }
                       className="text-base cursor-pointer"
                       key={idx}
                       onClick={() => {
-                        setCity(extractEntityFromURL(city.resource.value));
+                        if (
+                          city == extractEntityFromURL(cityData.resource.value)
+                        ) {
+                          setCity('');
+                        } else {
+                          setCity(
+                            extractEntityFromURL(cityData.resource.value)
+                          );
+                        }
                         setOpen(false);
                       }}
                     >
-                      {extractEntityFromURL(city.resource.value)}
+                      {extractEntityFromURL(cityData.resource.value)}
                     </Badge>
                   ))}
               </div>
