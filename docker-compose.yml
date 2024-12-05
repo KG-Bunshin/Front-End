@@ -1,0 +1,57 @@
+services:
+  caddy:
+    container_name: caddy
+    image: lucaslorentz/caddy-docker-proxy:ci-alpine
+    labels:
+      caddy.log.output: stderr
+      caddy.log.format: json
+      caddy.log.include: http.log.access
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - CADDY_INGRESS_NETWORKS=public-web
+    networks:
+      - public-web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - caddy_data:/data
+    restart: unless-stopped
+
+  graphdb:
+    container_name: graphdb
+    image: ontotext/graphdb:10.7.6-amd64
+    ports:
+      - 7200:7200
+    labels:
+      caddy: db.kgbunshin.org
+      caddy.reverse_proxy: '{{upstreams 7200}}'
+    volumes:
+      - graphdb_data:/opt/graphdb/home
+    depends_on:
+      - caddy
+    networks:
+      - public-web
+    restart: unless-stopped
+
+  frontend:
+    container_name: frontend
+    image: asia-southeast2-docker.pkg.dev/kageh-bunshin/kgbunshin-ar/frontend:stable
+    ports:
+      - 3000:3000
+    labels:
+      caddy: kgbunshin.org
+      caddy.reverse_proxy: '{{upstreams 3000}}'
+    depends_on:
+      - kgbunshin-backend
+    networks:
+      - public-web
+    restart: unless-stopped
+
+networks:
+  public-web:
+    external: true
+
+volumes:
+  caddy_data:
+  graphdb_data:
