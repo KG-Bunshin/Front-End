@@ -99,7 +99,11 @@ const Infobox: React.FC<InfoboxProps> = ({
               )}
             </li>
           )}
-          {inceptionYear && <li>Tahun Diresmikan: {inceptionYear}</li>}
+          {inceptionYear && (
+            <li>
+              Tanggal Diresmikan: {new Date(inceptionYear).toLocaleDateString()}
+            </li>
+          )}
           {priceGeneral != undefined && (
             <li>
               Harga:

@@ -280,7 +280,7 @@ export function constructPlaceEntityQueryWikiData(resource: string): string {
               }
               OPTIONAL { ?wikidataPlaceURI wdt:P856 ?officialWebsite . }
               OPTIONAL { ?wikidataPlaceURI wdt:P2044 ?elevationAboveSeaLevel . }
-              OPTIONAL { ?wikidataPlaceURI wdt:P1571 ?inceptionYear . }
+              OPTIONAL { ?wikidataPlaceURI wdt:P571 ?inceptionYear . }
               OPTIONAL { 
                   ?wikidataPlaceURI wdt:P31 ?specificCategory .    # Instance of category
                   ?specificCategory rdfs:label ?specificCategoryLabel .  # Label for the category
