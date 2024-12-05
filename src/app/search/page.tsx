@@ -232,9 +232,7 @@ export default function Search() {
               <Slash />
             </BreadcrumbSeparator>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/search?place=${place}`}>
-                Search
-              </BreadcrumbLink>
+              <BreadcrumbLink href={`/search`}>Search</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

@@ -89,13 +89,7 @@ export default function Data({ params }: { params: { resource: string } }) {
               <Slash />
             </BreadcrumbSeparator>
             <BreadcrumbItem>
-              <BreadcrumbLink
-                href={`/search?place=${
-                  placeData?.results.bindings[0].placeName?.value || ''
-                }`}
-              >
-                Search
-              </BreadcrumbLink>
+              <BreadcrumbLink href={`/search`}>Search</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
