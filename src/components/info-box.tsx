@@ -43,7 +43,7 @@ const Infobox: React.FC<InfoboxProps> = ({
   visitorYear,
   timeSpent,
 }) => {
-  const googleMapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_MAP_KEY}=${latitude},${longitude}&zoom=15`;
+  const googleMapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.MAP_KEY}=${latitude},${longitude}&zoom=15`;
 
   return (
     <div className="max-w-xl mx-auto bg-white border rounded-lg shadow-md p-4">
