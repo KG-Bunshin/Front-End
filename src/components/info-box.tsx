@@ -19,6 +19,8 @@ interface InfoboxProps {
   visitors?: string;
   visitorYear?: string;
   timeSpent?: string;
+  elevationAboveSeaLevel?: string;
+  inceptionYear?: string;
 }
 
 const Infobox: React.FC<InfoboxProps> = ({
@@ -42,10 +44,11 @@ const Infobox: React.FC<InfoboxProps> = ({
   visitors,
   visitorYear,
   timeSpent,
+  elevationAboveSeaLevel,
+  inceptionYear,
 }) => {
   const googleMapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_MAP_KEY}&q=${latitude},${longitude}&zoom=15`;
 
-  console.log(process.env.NEXT_PUBLIC_MAP_KEY);
   return (
     <div className="max-w-xl mx-auto bg-white border rounded-lg shadow-md p-4">
       {imageUrl && (
@@ -96,6 +99,7 @@ const Infobox: React.FC<InfoboxProps> = ({
               )}
             </li>
           )}
+          {inceptionYear && <li>Tahun Diresmikan: {inceptionYear}</li>}
           {priceGeneral != undefined && (
             <li>
               Harga:
@@ -134,6 +138,9 @@ const Infobox: React.FC<InfoboxProps> = ({
               Jumlah Pengunjung (Tahun {visitorYear}):{' '}
               {visitors.toLocaleString()}
             </li>
+          )}
+          {elevationAboveSeaLevel && (
+            <li>Ketinggian: {elevationAboveSeaLevel} mdpl</li>
           )}
         </ul>
       </div>

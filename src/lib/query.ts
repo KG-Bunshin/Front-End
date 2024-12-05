@@ -130,10 +130,14 @@ type Filters = {
   city?: string;
   category?: string;
   place?: string;
+  page?: number;
 };
 
 export function constructSearchPlacesQuery(filters: Filters): string {
-  const { city, category, place } = filters;
+  const { city, category, place, page = 1 } = filters;
+
+  const limit = 9; // Fixed limit per page
+  const offset = (page - 1) * limit;
 
   let query = `
         PREFIX : <http://kgbunshin.org/>
@@ -194,6 +198,8 @@ export function constructSearchPlacesQuery(filters: Filters): string {
   // Add optional city details
   query += `
         }
+        LIMIT ${limit}
+        OFFSET ${offset}
     `;
 
   return query;
@@ -274,7 +280,7 @@ export function constructPlaceEntityQueryWikiData(resource: string): string {
               }
               OPTIONAL { ?wikidataPlaceURI wdt:P856 ?officialWebsite . }
               OPTIONAL { ?wikidataPlaceURI wdt:P2044 ?elevationAboveSeaLevel . }
-              OPTIONAL { ?wikidataPlaceURI wdt:P1571 ?inceptionTime . }
+              OPTIONAL { ?wikidataPlaceURI wdt:P1571 ?inceptionYear . }
               OPTIONAL { 
                   ?wikidataPlaceURI wdt:P31 ?specificCategory .    # Instance of category
                   ?specificCategory rdfs:label ?specificCategoryLabel .  # Label for the category

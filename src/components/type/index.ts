@@ -44,6 +44,8 @@ export type PlaceDetail = {
   wikidataPlaceURI?: RDFURI;
   wdImageURL?: RDFURI;
   officialWebsite?: RDFURI;
+  elevationAboveSeaLevel?: RDFLiteral;
+  inceptionYear?: RDFLiteral;
   aggregatedCategoryLabels?: RDFLiteral;
   visitorNum?: RDFLiteral;
   visitorYear?: RDFLiteral;

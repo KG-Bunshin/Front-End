@@ -20,7 +20,12 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import CustomCard from '@/components/custom-card';
-import { StringParam, useQueryParam, withDefault } from 'use-query-params';
+import {
+  NumberParam,
+  StringParam,
+  useQueryParam,
+  withDefault,
+} from 'use-query-params';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
@@ -50,10 +55,22 @@ import { extractEntityFromURL, getCategoryImage } from '@/lib/utils';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 export default function Search() {
   const [placesImage, setPlacesImage] = useState<string[]>([]);
   const [open, setOpen] = useState<boolean>(false);
+
+  const [page, setPage] = useQueryParam('page', withDefault(NumberParam, 1));
+
   const [place, setPlace] = useQueryParam(
     'place',
     withDefault(StringParam, '')
@@ -75,10 +92,8 @@ export default function Search() {
     queryKey: ['places'],
     queryFn: async () => {
       const response = await axios.post(`/api/sparql`, {
-        query: constructSearchPlacesQuery({ category, city, place }),
+        query: constructSearchPlacesQuery({ category, city, place, page }),
       });
-
-      console.log(constructSearchPlacesQuery({ category, city, place }));
 
       return response.data;
     },
@@ -154,9 +169,56 @@ export default function Search() {
 
   useEffect(() => {
     refetch();
+    setPage(1);
   }, [place, category, city]);
 
-  console.log(places);
+  useEffect(() => {
+    refetch();
+  }, [page]);
+
+  const handlePrevious = (): void => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
+
+  const handleNext = () => {
+    setPage(page + 1);
+  };
+
+  const renderPageLinks = () => {
+    const pages = [];
+    let startPage, endPage;
+
+    if (page <= 2) {
+      // Show the first few pages without ellipsis
+      startPage = 1;
+      endPage = 3;
+    } else {
+      // General case: current page in the middle
+      startPage = page - 1;
+      endPage = page + 1;
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            href="#"
+            isActive={i === page}
+            onClick={(e) => {
+              e.preventDefault();
+              setPage(i);
+            }}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return pages;
+  };
 
   return (
     <main className="min-h-screen bg-gray-100 space-y-5">
@@ -270,40 +332,77 @@ export default function Search() {
             </RadioGroup>
           </div>
         </div>
-        <div className="w-10/12 grid grid-cols-3 gap-5 pl-5">
-          {places &&
-            places.results.bindings.length > 0 &&
-            places.results.bindings.map((place, index) => (
-              <Link
-                key={index}
-                href={`/page/${extractEntityFromURL(place.resource.value)}`}
-              >
-                <CustomCard
-                  imageUrl={
-                    placesImage[index] != '' ? placesImage[index] : undefined
-                  }
-                  title={place.label.value}
-                  category={place.categoryLabel.value}
-                  city={extractEntityFromURL(place.city.value)}
-                  ratingValue={place.ratingValue.value}
-                  price={
-                    place.valuePrice
-                      ? place.valuePrice.value == '0.0'
-                        ? 'Gratis'
-                        : 'Rp ' + place.valuePrice.value
-                      : place.valuePriceWeekend
-                      ? place.valuePriceWeekend.value == '0.0'
-                        ? 'Gratis'
-                        : 'Rp ' + place.valuePriceWeekend.value
-                      : place.valuePriceWeekday
-                      ? place.valuePriceWeekday.value == '0.0'
-                        ? 'Gratis'
-                        : 'Rp ' + place.valuePriceWeekday.value
-                      : 'Tidak Diketahui'
-                  }
+        <div className="w-10/12 ml-5 flex flex-col gap-5">
+          <div className="w-full grid grid-cols-3 gap-5">
+            {places &&
+              places.results.bindings.length > 0 &&
+              places.results.bindings.map((place, index) => (
+                <Link
+                  key={index}
+                  href={`/page/${extractEntityFromURL(place.resource.value)}`}
+                >
+                  <CustomCard
+                    imageUrl={
+                      placesImage[index] != '' ? placesImage[index] : undefined
+                    }
+                    title={place.label.value}
+                    category={place.categoryLabel.value}
+                    city={extractEntityFromURL(place.city.value)}
+                    ratingValue={place.ratingValue.value}
+                    price={
+                      place.valuePrice
+                        ? place.valuePrice.value == '0.0'
+                          ? 'Gratis'
+                          : 'Rp ' + place.valuePrice.value
+                        : place.valuePriceWeekend
+                        ? place.valuePriceWeekend.value == '0.0'
+                          ? 'Gratis'
+                          : 'Rp ' + place.valuePriceWeekend.value
+                        : place.valuePriceWeekday
+                        ? place.valuePriceWeekday.value == '0.0'
+                          ? 'Gratis'
+                          : 'Rp ' + place.valuePriceWeekday.value
+                        : 'Tidak Diketahui'
+                    }
+                  />
+                </Link>
+              ))}
+          </div>
+          <Pagination>
+            <PaginationContent>
+              {page > 1 && (
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePrevious();
+                    }}
+                  />
+                </PaginationItem>
+              )}
+              {page > 2 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+              {renderPageLinks()}
+              {page < 1000 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNext();
+                  }}
                 />
-              </Link>
-            ))}
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
     </main>

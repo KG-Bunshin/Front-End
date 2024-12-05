@@ -182,6 +182,10 @@ export default function Data({ params }: { params: { resource: string } }) {
           }
           visitors={placeData?.results.bindings[0].visitorNum?.value}
           visitorYear={placeData?.results.bindings[0].visitorYear?.value}
+          elevationAboveSeaLevel={
+            placeData?.results.bindings[0].elevationAboveSeaLevel?.value
+          }
+          inceptionYear={placeData?.results.bindings[0].inceptionYear?.value}
         />
       )}
     </div>
